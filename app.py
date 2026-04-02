@@ -9,54 +9,34 @@ st.set_page_config(page_title="RecoAI", layout="wide")
 # ================= STYLE =================
 st.markdown("""
 <style>
-.stApp {
-    background: linear-gradient(135deg, #0b1220, #0f172a);
-    color: #e2e8f0;
-}
-.card {
-    background: rgba(15, 23, 42, 0.85);
-    padding: 22px;
-    border-radius: 18px;
-    margin-bottom: 18px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
-.top-card {
-    border: 1px solid gold;
-    box-shadow: 0 0 20px rgba(255,215,0,0.4);
-}
-.badge {padding:4px 10px;margin:4px;border-radius:20px;font-size:11px;}
-.session {background:#064e3b;color:#34d399;}
-.next {background:#0c4a6e;color:#38bdf8;}
-.co {background:#312e81;color:#818cf8;}
-.pop {background:#78350f;color:#fbbf24;}
+.stApp {background: linear-gradient(135deg, #0b1220, #0f172a); color:#e2e8f0;}
+.card {background:#0f172a;padding:20px;border-radius:16px;margin-bottom:15px;}
+.top-card {border:1px solid gold;}
+.badge {padding:4px 10px;margin:4px;border-radius:20px;font-size:11px;background:#1e293b;}
 .bar-track {width:100%;height:6px;background:#1e293b;border-radius:10px;}
 .bar-fill {height:100%;background:linear-gradient(90deg,#22c55e,#3b82f6);}
 </style>
 """, unsafe_allow_html=True)
 
-# ================= SAFE DOWNLOAD =================
+# ================= DOWNLOAD =================
 def download_file(file_id, output):
     if not os.path.exists(output):
         url = f"https://drive.google.com/uc?id={file_id}"
-        try:
-            gdown.download(url, output, quiet=False, fuzzy=True)
-        except:
-            st.error(f"❌ Failed to download {output}")
-            st.stop()
+        gdown.download(url, output, quiet=False, fuzzy=True)
 
 # ================= LOAD =================
 @st.cache_resource
 def load_data():
 
-    download_file("1kX-7IOcW3c3LMrS_mjNMdrqj5KrkG8aG", "cooccur.pkl")
+    # 🔥 ONLY LOAD SMALL FILES (IMPORTANT)
     download_file("1zpNURRMmhDsRHAJJw7XHKA6U4kgVlh4u", "next_top.pkl")
     download_file("1_uPDn5TtGttVZf-71NwvVOmAKVAcU6-N", "popular.pkl")
 
-    cooccur = pickle.load(open("cooccur.pkl", "rb"))
-    cooccur = dict(list(cooccur.items())[:20000])  # 🔥 reduced for cloud
-
     next_top = pickle.load(open("next_top.pkl", "rb"))
     popular_items = pickle.load(open("popular.pkl", "rb"))
+
+    # ❌ DO NOT LOAD COOCCUR (too big)
+    cooccur = {}
 
     return cooccur, next_top, popular_items
 
@@ -75,29 +55,21 @@ def recommend(session_items, k=5):
     last_item = session_items[-1]
     session_set = set(session_items)
 
-    candidates = set(popular_items[:100]) | session_set  # 🔥 lighter
+    candidates = set(popular_items[:100]) | session_set
 
     for aid in candidates:
         score = 0
         exp = {}
 
+        # session
         if aid in session_set:
             score += 5; exp["Session"] = 5
 
+        # next-item
         if last_item in next_top and aid in next_top[last_item]:
             score += 3; exp["Next"] = 3
 
-        if cooccur:
-            co_score = sum(
-                2 for item in session_items
-                if item in cooccur and aid in cooccur.get(item, {})
-            )
-        else:
-            co_score = 0
-
-        if co_score > 0:
-            score += co_score; exp["Co"] = co_score
-
+        # popularity
         if aid in popular_items[:100]:
             score += 1; exp["Popular"] = 1
 
@@ -111,7 +83,7 @@ st.title("🛍️ RecoAI — Smart Recommender")
 
 col1, col2 = st.columns([1, 3])
 
-# LEFT PANEL
+# LEFT
 with col1:
     st.subheader("Session")
 
@@ -131,7 +103,7 @@ with col1:
             st.session_state.session_items.pop(i)
             st.rerun()
 
-# RIGHT PANEL
+# RIGHT
 with col2:
     if not st.session_state.session_items:
         st.info("Add items to start")
@@ -145,7 +117,8 @@ with col2:
             badge_html = "".join([f'<span class="badge">{k}</span>' for k in exp])
 
             bars_html = "".join([
-                f'<div>{k}: +{v}</div><div class="bar-track"><div class="bar-fill" style="width:{v*20}%"></div></div>'
+                f'<div>{k}: +{v}</div>'
+                f'<div class="bar-track"><div class="bar-fill" style="width:{v*20}%"></div></div>'
                 for k, v in exp.items()
             ])
 
