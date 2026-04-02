@@ -1,5 +1,7 @@
 import streamlit as st
 import pickle
+import os
+import gdown
 
 # ================= CONFIG =================
 st.set_page_config(page_title="RecoAI", layout="wide")
@@ -72,28 +74,27 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+def download_file(file_id, output):
+    if not os.path.exists(output):
+        url = f"https://drive.google.com/uc?id={file_id}"
+        gdown.download(url, output, quiet=False)
 # ================= LOAD =================
 @st.cache_resource
 def load_data():
-    try:
-        cooccur = pickle.load(open("cooccur.pkl", "rb"))
-        cooccur = dict(list(cooccur.items())[:30000])
-    except:
-        cooccur = {}
 
-    try:
-        next_top = pickle.load(open("next_top.pkl", "rb"))
-    except:
-        next_top = {}
+    # 🔥 DOWNLOAD FILES FROM DRIVE
+    download_file("1kX-7IOcW3c3LMrS_mjNMdrqj5KrkG8aG", "cooccur.pkl")
+    download_file("1zpNURRMmhDsRHAJJw7XHKA6U4kgVlh4u", "next_top.pkl")
+    download_file("1_uPDn5TtGttVZf-71NwvVOmAKVAcU6-N", "popular.pkl")
 
-    try:
-        popular_items = pickle.load(open("popular.pkl", "rb"))
-    except:
-        popular_items = list(range(1000))
+    # 🔥 LOAD FILES
+    cooccur = pickle.load(open("cooccur.pkl", "rb"))
+    cooccur = dict(list(cooccur.items())[:30000])  # memory safe
+
+    next_top = pickle.load(open("next_top.pkl", "rb"))
+    popular_items = pickle.load(open("popular.pkl", "rb"))
 
     return cooccur, next_top, popular_items
-
-cooccur, next_top, popular_items = load_data()
 
 # ================= SESSION =================
 if "session_items" not in st.session_state:
