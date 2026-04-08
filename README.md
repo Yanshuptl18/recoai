@@ -1,5 +1,10 @@
 # RecoAI – Session-Based Recommendation System
 
+## Live Demo
+https://recoai.streamlit.app/
+
+---
+
 ## Table of Contents
 - Overview
 - Key Features
@@ -17,6 +22,7 @@
 - Key Learnings
 - Future Work
 - Author
+- Live Demo
 
 ---
 
@@ -108,4 +114,41 @@ This project focuses on predicting user intent within a session without relying 
 
 ---
 
-## Project Structure
+## How to Run
+
+```bash
+git clone https://github.com/yourusername/recoai.git
+cd recoai
+pip install -r requirements.txt
+streamlit run app.py
+
+---
+
+## Key Learnings
+
+- Session based models work well for anonymous users  
+- Candidate generation is critical for scalability  
+- Feature engineering is more important than complex models  
+- Optimization is key for real world deployment  
+
+---
+
+## Future Work
+
+- Add deep learning models like GRU4Rec or Transformers  
+- Use real time streaming with Kafka  
+- Improve personalization with contextual features  
+
+---
+
+## Author
+
+Yanshu Patel  
+LinkedIn  
+GitHub  
+
+---
+
+## Live Demo
+
+https://recoai.streamlit.app/
