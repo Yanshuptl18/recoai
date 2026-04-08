@@ -118,7 +118,7 @@ git clone https://github.com/yourusername/recoai.git
 cd recoai
 pip install -r requirements.txt
 streamlit run app.py
-
+```
 ---
 
 ## Key Learnings
@@ -146,6 +146,3 @@ GitHub
 
 ---
 
-## Live Demo
-
-https://recoai.streamlit.app/
