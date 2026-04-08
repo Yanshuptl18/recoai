@@ -141,7 +141,7 @@ streamlit run app.py
 ## Author
 
 Yanshu Patel  
-LinkedIn  
+LinkedIn https://www.linkedin.com/in/yanshu-patel-165b2b297/
 GitHub  
 
 ---
