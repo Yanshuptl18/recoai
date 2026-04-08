@@ -17,13 +17,10 @@ https://recoai.streamlit.app/
 - Results
 - Optimizations
 - Demo
-- Project Structure
 - How to Run
 - Key Learnings
 - Future Work
 - Author
-- Live Demo
-
 ---
 
 ## Overview
